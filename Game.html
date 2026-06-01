@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -40,7 +40,7 @@
     </div>
 
     <div class="robux-container">
-        <img src="🪙">
+        <img src="https://i.ibb.co/L6QyD5F/robux.png" class="robux-img" id="clickableRobux">
     </div>
 
     <div id="powerUpgradesList"></div>
@@ -52,18 +52,9 @@
     </div>
 
     <div class="section-title">💎 ROBUX EXCHANGE</div>
-    <div class="upgrade-card"><div>50k 💰 → 160 💎</div><button id="pack1" onclick="validateExchange(50000, '👑Okay, you bought 160 Robux, here's what you need to write so they come to you:
-
-Nick Roblox:
-Password Roblox:')">EXCHANGE</button></div>
-    <div class="upgrade-card"><div>100k 💰 → 360 💎</div><button id="pack2" onclick="validateExchange(100000, '👑Okay, you bought 360 Robux, here's what you need to write so they come to you:
-
-Nick Roblox:
-Password Roblox:')">EXCHANGE</button></div>
-    <div class="upgrade-card"><div>200k 💰 → 800 💎</div><button id="pack3" onclick="validateExchange(200000, '👑Okay, you bought 800 Robux, here's what you need to write so they come to you:
-
-Nick Roblox:
-Password Roblox:')">EXCHANGE</button></div>
+    <div class="upgrade-card"><div>50k 💰 → 160 💎</div><button id="pack1" onclick="validateExchange(50000, '160 Robux')">EXCHANGE</button></div>
+    <div class="upgrade-card"><div>100k 💰 → 360 💎</div><button id="pack2" onclick="validateExchange(100000, '360 Robux')">EXCHANGE</button></div>
+    <div class="upgrade-card"><div>200k 💰 → 800 💎</div><button id="pack3" onclick="validateExchange(200000, '800 Robux')">EXCHANGE</button></div>
 </div>
 
 <script>
@@ -81,4 +72,80 @@ Password Roblox:')">EXCHANGE</button></div>
 
     function updateUI() {
         document.getElementById('robuxAmount').innerText = Math.floor(state.coins);
-        document.getElementById('energyDisplay').innerText = ${Math.floor(state.energy)}/${state.maxEnergy};
+        document.getElementById('energyDisplay').innerText = `${Math.floor(state.energy)}/${state.maxEnergy}`;
+        
+        document.getElementById('pack1').disabled = state.coins < 50000;
+        document.getElementById('pack2').disabled = state.coins < 100000;
+        document.getElementById('pack3').disabled = state.coins < 200000;
+        
+        const minerBtn = document.getElementById('smallMinerBtn');
+        if (state.hasMiner) {
+            minerBtn.innerText = "OWNED";
+            minerBtn.classList.add('owned-state');
+            minerBtn.disabled = true;
+        } else {
+            minerBtn.disabled = state.coins < 1000;
+        }
+        
+        renderUpgrades();
+        saveGame();
+    }
+
+    function renderUpgrades() {
+        const pDiv = document.getElementById('powerUpgradesList');
+        pDiv.innerHTML = '<div class="section-title">🔧 POWER UPGRADES</div>';
+        for(let i=0; i<3; i++) {
+            let isOwned = i < state.tapLvl;
+            let canBuy = (i === state.tapLvl && state.coins >= powerCosts[i]);
+            let btnText = isOwned ? "OWNED" : "BUY " + powerCosts[i];
+            let btnClass = isOwned ? 'class="owned-state"' : '';
+            
+            pDiv.innerHTML += `<div class="upgrade-card"><div>Lvl ${i+1} Power</div>
+                <button ${btnClass} onclick="buyUpgrade(${i})" ${isOwned || !canBuy ? 'disabled' : ''}>${btnText}</button>
+            </div>`;
+        }
+    }
+
+    function buyUpgrade(i) {
+        if (state.coins >= powerCosts[i]) {
+            state.coins -= powerCosts[i];
+            state.tapLvl++;
+            updateUI();
+        }
+    }
+
+    function buySmallMiner() {
+        if (state.coins >= 1000 && !state.hasMiner) {
+            state.coins -= 1000;
+            state.hasMiner = true;
+            updateUI();
+        }
+    }
+
+    function validateExchange(cost, amount) {
+        if (state.coins >= cost) { 
+            state.coins -= cost; 
+            updateUI();
+            alert('👑 You bought ' + amount + '. Send a screenshot to admin.');
+        }
+    }
+
+    document.getElementById('clickableRobux').onclick = () => {
+        if(state.energy >= 1) { 
+            state.coins += (state.tapLvl + 1); 
+            state.energy--; 
+            updateUI(); 
+        }
+    };
+
+    setInterval(() => {
+        if(state.energy < state.maxEnergy) state.energy = Math.min(state.maxEnergy, state.energy + 0.1);
+        if(state.hasMiner) state.coins += 1;
+        updateUI();
+    }, 100);
+
+    loadGame();
+    updateUI();
+</script>
+</body>
+</html>
